@@ -15,6 +15,7 @@ index = None
 
 def split_text(text, chunk_size=1000, overlap=200):
     result = []
+    
     start = 0
     while start < len(text):
         end = min(start + chunk_size, len(text))
