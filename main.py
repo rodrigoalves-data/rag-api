@@ -1,4 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import numpy as np
 import faiss
@@ -41,9 +43,11 @@ def search(query, k=3):
 class Question(BaseModel):
     query: str
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/")
 def root():
-    return {"status": "RAG API online"}
+    return FileResponse("static/index.html")
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
