@@ -3,9 +3,7 @@ uvicorn
 anthropic
 faiss-cpu
 pypdf
-sentence-transformers
 langchain
 langchain-community
-pyngrok
-nest-asyncio
 python-multipart
+numpy
