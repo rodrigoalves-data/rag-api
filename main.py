@@ -5,13 +5,10 @@ import faiss
 import shutil
 import anthropic
 import os
-from sentence_transformers import SentenceTransformer
 from langchain_community.document_loaders import PyPDFLoader
 
 app = FastAPI()
 
-# Modelos e índice globais
-embed_model = SentenceTransformer('all-MiniLM-L6-v2')
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 chunks = []
 index = None
@@ -30,8 +27,15 @@ def split_text(text, chunk_size=1000, overlap=200):
         start = next_start
     return result
 
+def get_embedding(text):
+    response = client.embeddings.create(
+        model="voyage-3",
+        input=text
+    )
+    return response.embeddings[0]
+
 def search(query, k=3):
-    query_embedding = embed_model.encode([query]).astype("float32")
+    query_embedding = np.array(get_embedding(query)).astype("float32").reshape(1, -1)
     distances, indices = index.search(query_embedding, k)
     return [chunks[i] for i in indices[0] if i < len(chunks)]
 
@@ -54,8 +58,7 @@ async def upload_pdf(file: UploadFile = File(...)):
     text = " ".join([doc.page_content for doc in documents])
     chunks = split_text(text)
 
-    embeddings = embed_model.encode(chunks)
-    embeddings = np.array(embeddings).astype("float32")
+    embeddings = np.array([get_embedding(c) for c in chunks]).astype("float32")
     index = faiss.IndexFlatL2(embeddings.shape[1])
     index.add(embeddings)
 
