@@ -8,3 +8,4 @@ langchain-community
 python-multipart
 numpy
 voyageai
+aiofiles
