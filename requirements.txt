@@ -7,5 +7,4 @@ langchain
 langchain-community
 python-multipart
 numpy
-sentence-transformers
-torch==2.1.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+voyageai
